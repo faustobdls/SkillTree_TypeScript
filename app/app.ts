@@ -11,6 +11,7 @@ import { SkillTreePreprocessors } from '../models/skill-tree/SkillTreePreprocess
 import { SemVer } from 'semver';
 import { versions } from '../models/versions/verions';
 import { UIEvents } from 'models/events/UIEvents';
+import { Point } from "pixi.js";
 
 export class App {
     private skillTreeData!: SkillTreeData;
@@ -19,7 +20,7 @@ export class App {
     private renderer!: ISkillTreeRenderer;
     private uievents!: UIEvents
 
-    public launch = async (version: string, versionCompare: string, versionJson: IVersions, edit: boolean) => {
+    public launch = async (version: string, versionCompare: string, versionJson: IVersions, edit: boolean, x: string, y: string) => {
         console.log(`edit: launch = ${edit}`);
         for (const i of [version, versionCompare]) {
             if (i === '') {
@@ -75,7 +76,7 @@ export class App {
             go.addEventListener("click", () => {
                 const version = versionSelect.value !== '0' ? versionSelect.value : '';
                 const compare = compareSelect.value !== '0' ? compareSelect.value : '';
-                App.ChangeSkillTreeVersion(version, compare, "", `${edit}`);
+                App.ChangeSkillTreeVersion(version, compare, "", `${edit}`, x, y);
             });
 
 
@@ -114,7 +115,7 @@ export class App {
 
         const container = document.getElementById("skillTreeContainer");
         if (container !== null) {
-            this.renderer = new PIXISkillTreeRenderer(container, this.skillTreeData, this.skillTreeDataCompare);
+            this.renderer = new PIXISkillTreeRenderer(container, this.skillTreeData, this.skillTreeDataCompare, x, y);
             this.renderer.Initialize()
                 .then(() => {
                     this.SetupEventsAndControls(edit);
@@ -549,7 +550,7 @@ export class App {
         }, {});
     };
 
-    public static ChangeSkillTreeVersion = (version: string, compare: string, hash: string, edit: string) => {
+    public static ChangeSkillTreeVersion = (version: string, compare: string, hash: string, edit: string, x: string, y: string) => {
         let search = '?';
         if (version !== '') {
             search += `v=${version}`;
@@ -565,14 +566,25 @@ export class App {
         if (edit !== '') {
             search += `edit=${edit}`;
         }
+        // else{
+        //     search += `edit=true`;
+        // }
+
+        if (!search.endsWith('?') && x !== '') search += '&';
+        if (x !== '') {
+            search += `x=${x}`;
+        }
+
+        if (!search.endsWith('?') && y !== '') search += '&';
+        if (y !== '') {
+            search += `y=${y}`;
+        }
 
         if (window.location.hash !== hash) {
             window.location.hash = hash;
         }
 
         if (window.location.search !== search) {
-            console.log(`${window.location.search}`);
-            console.log(`${search}`);
             window.location.search = search;
         }
     }

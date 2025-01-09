@@ -29,8 +29,6 @@ window.onload = async () => {
         query['c'] = '';
     }
 
-    console.log(`edit: query = ${query['edit']}`);
-    
-    App.ChangeSkillTreeVersion(query['v'], query['c'], window.location.hash, `${query['edit'] === 'true'}`);
-    new App().launch(query['v'], query['c'], versionsJson, query['edit'] === 'true');
+    App.ChangeSkillTreeVersion(query['v'], query['c'], window.location.hash, `${query['edit'] === 'true'}`, query['x'], query['y']);
+    new App().launch(query['v'], query['c'], versionsJson, query['edit'] === 'true', query['x'], query['y']);
 };

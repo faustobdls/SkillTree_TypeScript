@@ -9,6 +9,7 @@ import { Cull } from '@pixi-essentials/cull';
 import { BaseSkillTreeRenderer, RenderLayer, IHighlight, ISpriteSheetAsset, IConnnection } from "./BaseSkillTreeRenderer";
 import { SemVer } from 'semver';
 import { versions } from './versions/verions';
+import { App } from "app/app";
 
 export class PIXISkillTreeRenderer extends BaseSkillTreeRenderer {
     private NodeTooltips: { [id: string]: PIXI.Container | undefined };
@@ -44,7 +45,7 @@ export class PIXISkillTreeRenderer extends BaseSkillTreeRenderer {
         [RenderLayer.TooltipCompare]: new PIXI.Container(),
     };
 
-    constructor(container: HTMLElement, skillTreeData: SkillTreeData, skillTreeDataCompare: SkillTreeData | undefined) {
+    constructor(container: HTMLElement, skillTreeData: SkillTreeData, skillTreeDataCompare: SkillTreeData | undefined, x: string, y: string) {
         super(container, skillTreeData, skillTreeDataCompare);
         this.NodeTooltips = {};
         this.NodeSpritesheets = {};
@@ -68,7 +69,12 @@ export class PIXISkillTreeRenderer extends BaseSkillTreeRenderer {
         Assets.reset();
 
         const zoomPercent = this.skillTreeData.imageZoomLevels.length > 2 ? this.skillTreeData.imageZoomLevels[1] - this.skillTreeData.imageZoomLevels[0] : .1;
-        const defaultZoomLimits = { minWidth: this.skillTreeData.width * (zoomPercent / 2), minHeight: this.skillTreeData.height * (zoomPercent / 2), maxWidth: this.skillTreeData.width * (zoomPercent * 10), maxHeight: this.skillTreeData.height * (zoomPercent * 10) };
+        const defaultZoomLimits = { 
+            minWidth: this.skillTreeData.width * (zoomPercent / 2), 
+            minHeight: this.skillTreeData.height * (zoomPercent / 2), 
+            maxWidth: this.skillTreeData.width * (zoomPercent * 10), 
+            maxHeight: this.skillTreeData.height * (zoomPercent * 10) 
+        };
         this.viewport = new Viewport({
             screenWidth: this.pixi.renderer.width,
             screenHeight: this.pixi.renderer.height,
@@ -78,10 +84,27 @@ export class PIXISkillTreeRenderer extends BaseSkillTreeRenderer {
             noTicker: true,
             stopPropagation: true
         });
+        
         this.viewport.name = 'viewport';
         this.viewport.drag().wheel({ percent: zoomPercent }).pinch({ percent: zoomPercent * 10 });
         this.viewport.clampZoom(defaultZoomLimits);
-        if(skillTreeData.tree === 'Atlas') this.viewport.moveCenter(this.viewport.center.x * (zoomPercent / 2), this.viewport.center.y * (zoomPercent / 2) - 2000 )
+
+        // SkillTreeEvents.viewport.on('up', (point: PIXI.Point) => {
+        //     App.ChangeSkillTreeVersion('','',window.location.hash,``,`${this.viewport.center.x}`,`${this.viewport.center.y}`)
+        // });
+        if(skillTreeData.tree === 'Atlas') {
+            this.viewport.moveCenter(
+                this.viewport.center.x * (zoomPercent / 2), 
+                this.viewport.center.y * (zoomPercent / 2) - 2000 
+            )
+        }else {
+            if(x !== 'undefined' && y !== 'undefined'){
+                this.viewport.moveCenter(
+                     Number.parseInt(x), 
+                     Number.parseInt(y),
+                )
+            }
+        }
         this.viewport.fitWorld(true);
         this.viewport.zoomPercent(1.726);
 
@@ -93,6 +116,7 @@ export class PIXISkillTreeRenderer extends BaseSkillTreeRenderer {
         this.pixi.stage.addChild(this.viewport);
 
         window.onresize = () => {
+            console.log(this.viewport.center)
             this.pixi.renderer.resize(window.innerWidth, window.innerHeight);
             this.viewport.resize(this.pixi.renderer.width, this.pixi.renderer.height, this.skillTreeData.width * (this.skillTreeData.scale * 1.25), this.skillTreeData.height * (this.skillTreeData.scale * 1.25));
             this.viewport.clampZoom(defaultZoomLimits);
