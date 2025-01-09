@@ -63,46 +63,52 @@ export class App {
             compareSelect.appendChild(c);
         }
 
-        const controls = document.getElementsByClassName("skillTreeVersions") as HTMLCollectionOf<HTMLDivElement>;
-        for (const i in controls) {
-            if (controls[i].style !== undefined) {
-                controls[i].style.removeProperty('display');
+        if(edit){
+            const controls = document.getElementsByClassName("skillTreeVersions") as HTMLCollectionOf<HTMLDivElement>;
+            for (const i in controls) {
+                if (controls[i].style !== undefined) {
+                    controls[i].style.removeProperty('display');
+                }
             }
-        }
 
-        const go = document.getElementById("skillTreeControl_VersionGo") as HTMLButtonElement;
-        go.addEventListener("click", () => {
-            const version = versionSelect.value !== '0' ? versionSelect.value : '';
-            const compare = compareSelect.value !== '0' ? compareSelect.value : '';
-            App.ChangeSkillTreeVersion(version, compare, "", `${edit}`);
-        });
+            const go = document.getElementById("skillTreeControl_VersionGo") as HTMLButtonElement;
+            go.addEventListener("click", () => {
+                const version = versionSelect.value !== '0' ? versionSelect.value : '';
+                const compare = compareSelect.value !== '0' ? compareSelect.value : '';
+                App.ChangeSkillTreeVersion(version, compare, "", `${edit}`);
+            });
 
 
-        const reset = document.getElementById("skillTreeControl_Reset") as HTMLButtonElement;
-        reset.addEventListener("click", () => {
-            const start = this.skillTreeData.getStartClass();
-            const asc = this.skillTreeData.getAscendancyClass();
-            const wildwoodAsc = this.skillTreeData.getWildwoodAscendancyClass();
+            const reset = document.getElementById("skillTreeControl_Reset") as HTMLButtonElement;
+            reset.addEventListener("click", () => {
+                const start = this.skillTreeData.getStartClass();
+                const asc = this.skillTreeData.getAscendancyClass();
+                const wildwoodAsc = this.skillTreeData.getWildwoodAscendancyClass();
 
-            this.skillTreeData.clearState(SkillNodeStates.Active);
+                this.skillTreeData.clearState(SkillNodeStates.Active);
 
-            SkillTreeEvents.controls.fire("class-change", start);
-            SkillTreeEvents.controls.fire("ascendancy-class-change", asc);
-            SkillTreeEvents.controls.fire("wildwood-ascendancy-class-change", wildwoodAsc);
-        });
+                SkillTreeEvents.controls.fire("class-change", start);
+                SkillTreeEvents.controls.fire("ascendancy-class-change", asc);
+                SkillTreeEvents.controls.fire("wildwood-ascendancy-class-change", wildwoodAsc);
+            });
 
-        const showhide = document.getElementById("skillTreeStats_ShowHide") as HTMLButtonElement;
-        showhide.addEventListener("click", () => {
-            const content = document.getElementById("skillTreeStats_Content") as HTMLDivElement;
+            const showhide = document.getElementById("skillTreeStats_ShowHide") as HTMLButtonElement;
+            showhide.addEventListener("click", () => {
+                const content = document.getElementById("skillTreeStats_Content") as HTMLDivElement;
+                const stats = document.getElementById("skillTreeStats") as HTMLDivElement;
+                if (content.toggleAttribute('hidden')) {
+                    stats.style.setProperty('height', 'fit-content');
+                    showhide.innerText = "Show";
+                } else {
+                    stats.style.setProperty('height', `80%`);
+                    showhide.innerText = "Hide";
+                }
+            });
+        }else{
+
             const stats = document.getElementById("skillTreeStats") as HTMLDivElement;
-            if (content.toggleAttribute('hidden')) {
-                stats.style.setProperty('height', 'fit-content');
-                showhide.innerText = "Show";
-            } else {
-                stats.style.setProperty('height', `80%`);
-                showhide.innerText = "Hide";
-            }
-        });
+            stats.style.setProperty('display', 'none');
+        }
 
         const container = document.getElementById("skillTreeContainer");
         if (container !== null) {
@@ -115,12 +121,14 @@ export class App {
                     this.renderer.RenderCharacterStartsActive();
                     this.renderer.RenderActive();
 
-                    const screenshot = document.getElementById("skillTreeControl_Screenshot") as HTMLSelectElement;
-                    screenshot.style.removeProperty('display');
-                    screenshot.addEventListener("click", async () => {
-                        const mimeType: 'image/jpeg' = 'image/jpeg';
-                        utils.Download(await this.renderer.CreateScreenshot(mimeType), `${version.replace(/\./g, '')}_skilltree.jpg`, mimeType);
-                    });
+                    if(edit){
+                        const screenshot = document.getElementById("skillTreeControl_Screenshot") as HTMLSelectElement;
+                        screenshot.style.removeProperty('display');
+                        screenshot.addEventListener("click", async () => {
+                            const mimeType: 'image/jpeg' = 'image/jpeg';
+                            utils.Download(await this.renderer.CreateScreenshot(mimeType), `${version.replace(/\./g, '')}_skilltree.jpg`, mimeType);
+                        });
+                    }
                 })
                 .catch((reason) => console.error(reason));
         }
@@ -138,25 +146,29 @@ export class App {
         }
         SkillTreeEvents.skill_tree.on("hovered-nodes-start", this.renderer.StartRenderHover);
         SkillTreeEvents.skill_tree.on("hovered-nodes-end", this.renderer.StopRenderHover);
-        
-        SkillTreeEvents.skill_tree.on("active-nodes-update", this.renderer.RenderActive);
-        SkillTreeEvents.skill_tree.on("active-nodes-update", this.updateStats);
+        if(edit){
+            SkillTreeEvents.skill_tree.on("active-nodes-update", this.renderer.RenderActive);
+            SkillTreeEvents.skill_tree.on("active-nodes-update", this.updateStats);
+        }
 
         SkillTreeEvents.skill_tree.on("normal-node-count", (count: number) => { const e = document.getElementById("skillTreeNormalNodeCount"); if (e !== null) e.innerHTML = count.toString(); });
         SkillTreeEvents.skill_tree.on("normal-node-count-maximum", (count: number) => { const e = document.getElementById("skillTreeNormalNodeCountMaximum"); if (e !== null) e.innerHTML = count.toString(); });
         SkillTreeEvents.skill_tree.on("ascendancy-node-count", (count: number) => { const e = document.getElementById("skillTreeAscendancyNodeCount"); if (e !== null) e.innerHTML = count.toString(); });
         SkillTreeEvents.skill_tree.on("ascendancy-node-count-maximum", (count: number) => { const e = document.getElementById("skillTreeAscendancyNodeCountMaximum"); if (e !== null) e.innerHTML = count.toString(); });
-        SkillTreeEvents.skill_tree.on("wildwood-ascendancy-node-count", (count: number) => { const e = document.getElementById("skillTreeWildwoodAscendancyNodeCount"); if (e !== null) e.innerHTML = count.toString(); });
-        SkillTreeEvents.skill_tree.on("wildwood-ascendancy-node-count-maximum", (count: number) => { const e = document.getElementById("skillTreeWildwoodAscendancyNodeCountMaximum"); if (e !== null) e.innerHTML = count.toString(); });
-
-        this.populateStartClasses(document.getElementById("skillTreeControl_Class") as HTMLSelectElement);
-        this.bindSearchBox(document.getElementById("skillTreeControl_Search") as HTMLInputElement);
-        const controls = document.getElementsByClassName("skillTreeControls") as HTMLCollectionOf<HTMLDivElement>;
-        for (const i in controls) {
-            if (controls[i].style !== undefined) {
-                controls[i].style.removeProperty('display');
+        
+        if(edit){
+            SkillTreeEvents.skill_tree.on("wildwood-ascendancy-node-count", (count: number) => { const e = document.getElementById("skillTreeWildwoodAscendancyNodeCount"); if (e !== null) e.innerHTML = count.toString(); });
+            SkillTreeEvents.skill_tree.on("wildwood-ascendancy-node-count-maximum", (count: number) => { const e = document.getElementById("skillTreeWildwoodAscendancyNodeCountMaximum"); if (e !== null) e.innerHTML = count.toString(); });
+            this.populateStartClasses(document.getElementById("skillTreeControl_Class") as HTMLSelectElement);
+            this.bindSearchBox(document.getElementById("skillTreeControl_Search") as HTMLInputElement);
+            const controls = document.getElementsByClassName("skillTreeControls") as HTMLCollectionOf<HTMLDivElement>;
+            for (const i in controls) {
+                if (controls[i].style !== undefined) {
+                    controls[i].style.removeProperty('display');
+                }
             }
         }
+
 
         const points = document.getElementsByClassName("skillTreePoints") as HTMLCollectionOf<HTMLDivElement>;
         for (const i in points) {
