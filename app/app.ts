@@ -108,6 +108,8 @@ export class App {
 
             const stats = document.getElementById("skillTreeStats") as HTMLDivElement;
             stats.style.setProperty('display', 'none');
+            const banner = document.getElementById("standard-banner") as HTMLDivElement;
+            banner.style.setProperty('display', 'none');
         }
 
         const container = document.getElementById("skillTreeContainer");
