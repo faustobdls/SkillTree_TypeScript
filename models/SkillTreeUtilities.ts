@@ -8,12 +8,12 @@ export class SkillTreeUtilities {
     skillTreeDataCompare: SkillTreeData | undefined;
     skillTreeCodec: SkillTreeCodec;
 
-    constructor(context: SkillTreeData, contextComapre: SkillTreeData | undefined) {
+    constructor(context: SkillTreeData, contextComapre: SkillTreeData | undefined, edit: boolean) {
         this.skillTreeData = context;
         this.skillTreeDataCompare = contextComapre;
         this.skillTreeCodec = new SkillTreeCodec();
 
-        SkillTreeEvents.node.on("click", this.click);
+        if(edit)  SkillTreeEvents.node.on("click", this.click);
         SkillTreeEvents.node.on("in", this.mouseover);
         SkillTreeEvents.node.on("out", this.mouseout);
 

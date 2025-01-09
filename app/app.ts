@@ -19,7 +19,8 @@ export class App {
     private renderer!: ISkillTreeRenderer;
     private uievents!: UIEvents
 
-    public launch = async (version: string, versionCompare: string, versionJson: IVersions) => {
+    public launch = async (version: string, versionCompare: string, versionJson: IVersions, edit: boolean) => {
+        console.log(`edit: launch = ${edit}`);
         for (const i of [version, versionCompare]) {
             if (i === '') {
                 continue;
@@ -42,7 +43,7 @@ export class App {
             }
         }
         this.uievents = new UIEvents(this.skillTreeData, this.skillTreeDataCompare);
-        this.skillTreeUtilities = new SkillTreeUtilities(this.skillTreeData, this.skillTreeDataCompare);
+        this.skillTreeUtilities = new SkillTreeUtilities(this.skillTreeData, this.skillTreeDataCompare, edit);
 
         const versionSelect = document.getElementById("skillTreeControl_Version") as HTMLSelectElement;
         const compareSelect = document.getElementById("skillTreeControl_VersionCompare") as HTMLSelectElement;
@@ -73,7 +74,7 @@ export class App {
         go.addEventListener("click", () => {
             const version = versionSelect.value !== '0' ? versionSelect.value : '';
             const compare = compareSelect.value !== '0' ? compareSelect.value : '';
-            App.ChangeSkillTreeVersion(version, compare, "");
+            App.ChangeSkillTreeVersion(version, compare, "", `${edit}`);
         });
 
 
@@ -108,7 +109,7 @@ export class App {
             this.renderer = new PIXISkillTreeRenderer(container, this.skillTreeData, this.skillTreeDataCompare);
             this.renderer.Initialize()
                 .then(() => {
-                    this.SetupEventsAndControls();
+                    this.SetupEventsAndControls(edit);
                     this.renderer.RenderBase();
                     this.skillTreeUtilities.decodeURL();
                     this.renderer.RenderCharacterStartsActive();
@@ -125,15 +126,19 @@ export class App {
         }
     }
 
-    private SetupEventsAndControls = () => {
-        SkillTreeEvents.skill_tree.on("highlighted-nodes-update", this.renderer.RenderHighlight);
-        SkillTreeEvents.skill_tree.on("class-change", this.renderer.RenderCharacterStartsActive);
-        SkillTreeEvents.skill_tree.on("class-change", this.updateClassControl);
-        SkillTreeEvents.skill_tree.on("ascendancy-class-change", this.updateAscClassControl);
-        SkillTreeEvents.skill_tree.on("wildwood-ascendancy-class-change", this.updateWildwoodAscClassControl);
+    private SetupEventsAndControls = (edit: boolean) => {
+        if(edit){
+                
+            SkillTreeEvents.skill_tree.on("highlighted-nodes-update", this.renderer.RenderHighlight);
+            SkillTreeEvents.skill_tree.on("class-change", this.renderer.RenderCharacterStartsActive);
+            SkillTreeEvents.skill_tree.on("class-change", this.updateClassControl);
+            SkillTreeEvents.skill_tree.on("ascendancy-class-change", this.updateAscClassControl);
+            SkillTreeEvents.skill_tree.on("wildwood-ascendancy-class-change", this.updateWildwoodAscClassControl);
 
+        }
         SkillTreeEvents.skill_tree.on("hovered-nodes-start", this.renderer.StartRenderHover);
         SkillTreeEvents.skill_tree.on("hovered-nodes-end", this.renderer.StopRenderHover);
+        
         SkillTreeEvents.skill_tree.on("active-nodes-update", this.renderer.RenderActive);
         SkillTreeEvents.skill_tree.on("active-nodes-update", this.updateStats);
 
@@ -530,7 +535,7 @@ export class App {
         }, {});
     };
 
-    public static ChangeSkillTreeVersion = (version: string, compare: string, hash: string) => {
+    public static ChangeSkillTreeVersion = (version: string, compare: string, hash: string, edit: string) => {
         let search = '?';
         if (version !== '') {
             search += `v=${version}`;
@@ -542,11 +547,18 @@ export class App {
             search += `c=${compare}`;
         }
 
+        if (!search.endsWith('?') && edit !== '') search += '&';
+        if (edit !== '') {
+            search += `edit=${edit}`;
+        }
+
         if (window.location.hash !== hash) {
             window.location.hash = hash;
         }
 
         if (window.location.search !== search) {
+            console.log(`${window.location.search}`);
+            console.log(`${search}`);
             window.location.search = search;
         }
     }

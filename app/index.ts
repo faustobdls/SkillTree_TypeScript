@@ -6,6 +6,7 @@ import { App } from "./app";
 import { versions } from '../models/versions/verions';
 
 window.onload = async () => {
+    console.log(`edit: query = ${window.location.search}`);
     const query = App.decodeURLParams(window.location.search);
 
     const versionsJson: IVersions = {
@@ -28,6 +29,8 @@ window.onload = async () => {
         query['c'] = '';
     }
 
-    App.ChangeSkillTreeVersion(query['v'], query['c'], window.location.hash);
-    new App().launch(query['v'], query['c'], versionsJson);
+    console.log(`edit: query = ${query['edit']}`);
+    
+    App.ChangeSkillTreeVersion(query['v'], query['c'], window.location.hash, `${query['edit'] === 'true'}`);
+    new App().launch(query['v'], query['c'], versionsJson, query['edit'] === 'true');
 };
