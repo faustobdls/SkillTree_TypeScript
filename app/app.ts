@@ -20,7 +20,7 @@ export class App {
     private renderer!: ISkillTreeRenderer;
     private uievents!: UIEvents
 
-    public launch = async (version: string, versionCompare: string, versionJson: IVersions, edit: boolean, x: string, y: string) => {
+    public launch = async (version: string, versionCompare: string, versionJson: IVersions, edit: boolean, x: string, y: string, zoom: string, ascendancyId: string) => {
         console.log(`edit: launch = ${edit}`);
         for (const i of [version, versionCompare]) {
             if (i === '') {
@@ -76,7 +76,7 @@ export class App {
             go.addEventListener("click", () => {
                 const version = versionSelect.value !== '0' ? versionSelect.value : '';
                 const compare = compareSelect.value !== '0' ? compareSelect.value : '';
-                App.ChangeSkillTreeVersion(version, compare, "", `${edit}`, x, y);
+                App.ChangeSkillTreeVersion(version, compare, "", `${edit}`, x, y, zoom, ascendancyId);
             });
 
 
@@ -550,7 +550,7 @@ export class App {
         }, {});
     };
 
-    public static ChangeSkillTreeVersion = (version: string, compare: string, hash: string, edit: string, x: string, y: string) => {
+    public static ChangeSkillTreeVersion = (version: string, compare: string, hash: string, edit: string, x: string, y: string, zoom: string, ascendancyId: string) => {
         let search = '?';
         if (version !== '') {
             search += `v=${version}`;

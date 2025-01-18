@@ -28,7 +28,14 @@ window.onload = async () => {
     if (!query['c']) {
         query['c'] = '';
     }
+    if (!query['zoom']) {
+        query['zoom'] = ''
+    }
 
-    App.ChangeSkillTreeVersion(query['v'], query['c'], window.location.hash, `${query['edit'] === 'true'}`, query['x'], query['y']);
-    new App().launch(query['v'], query['c'], versionsJson, query['edit'] === 'true', query['x'], query['y']);
+    if (!query['ascendancyId']) {
+        query['ascendancyId'] = ''
+    }
+
+    App.ChangeSkillTreeVersion(query['v'], query['c'], window.location.hash, `${query['edit'] === 'true'}`, query['x'], query['y'], query['zoom'], query['ascendancyId']);
+    new App().launch(query['v'], query['c'], versionsJson, query['edit'] === 'true', query['x'], query['y'], query['zoom'], query['ascendancyId']);
 };
