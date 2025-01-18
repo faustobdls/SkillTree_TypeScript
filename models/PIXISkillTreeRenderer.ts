@@ -45,7 +45,7 @@ export class PIXISkillTreeRenderer extends BaseSkillTreeRenderer {
         [RenderLayer.TooltipCompare]: new PIXI.Container(),
     };
 
-    constructor(container: HTMLElement, skillTreeData: SkillTreeData, skillTreeDataCompare: SkillTreeData | undefined, x: string, y: string) {
+    constructor(container: HTMLElement, skillTreeData: SkillTreeData, skillTreeDataCompare: SkillTreeData | undefined, x: string, y: string, zoom: string, ascendancyId: string) {
         super(container, skillTreeData, skillTreeDataCompare);
         this.NodeTooltips = {};
         this.NodeSpritesheets = {};

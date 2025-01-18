@@ -115,7 +115,7 @@ export class App {
 
         const container = document.getElementById("skillTreeContainer");
         if (container !== null) {
-            this.renderer = new PIXISkillTreeRenderer(container, this.skillTreeData, this.skillTreeDataCompare, x, y);
+            this.renderer = new PIXISkillTreeRenderer(container, this.skillTreeData, this.skillTreeDataCompare, x, y, zoom, ascendancyId);
             this.renderer.Initialize()
                 .then(() => {
                     this.SetupEventsAndControls(edit);
@@ -578,6 +578,16 @@ export class App {
         if (!search.endsWith('?') && y !== '') search += '&';
         if (y !== '') {
             search += `y=${y}`;
+        }
+
+        if (!search.endsWith('?') && zoom !== '') search += '&';
+        if (zoom !== '') {
+            search += `zoom=${zoom}`;
+        }
+
+        if (!search.endsWith('?') && ascendancyId !== '') search += '&';
+        if (ascendancyId !== '') {
+            search += `ascendancyId=${ascendancyId}`;
         }
 
         if (window.location.hash !== hash) {
