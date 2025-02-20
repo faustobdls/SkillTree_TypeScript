@@ -17,6 +17,15 @@ export abstract class BaseSkillTreeRenderer implements ISkillTreeRenderer {
         this.skillTreeData = skillTreeData;
         this.skillTreeDataCompare = skillTreeDataCompare;
     }
+    PositionedOn(): void {
+        // throw new Error("Method not implemented.");
+    }
+    CustomStartRenderHover(skillNode: SkillNode): void {
+        // throw new Error("Method not implemented.");
+    }
+    CustomStopRenderHover(skillNode: SkillNode): void {
+        // throw new Error("Method not implemented.");
+    }
 
     abstract IsDirty(): boolean;
     abstract PreUpdate(delta: number): void;

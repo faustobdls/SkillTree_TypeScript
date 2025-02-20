@@ -26,7 +26,7 @@ const copy = async (src: string, dst: string, callback: undefined | ((file: BunF
     Bun.write(dst, data)
 }
 
-(async () => {
+const builder = async () => {
     const output = './dist'
 
     klaw(output, { depthLimit: 0 })
@@ -70,4 +70,8 @@ const copy = async (src: string, dst: string, callback: undefined | ((file: BunF
     }
 
     console.log('✅ build succeeded');
-})();
+}
+
+builder();
+
+export {builder}

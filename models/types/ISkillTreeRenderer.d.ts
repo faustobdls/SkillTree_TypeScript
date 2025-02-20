@@ -4,6 +4,12 @@ interface ISkillTreeRenderer {
     Initialized: boolean;
     Initialize(): Promise<boolean>;
 
+    
+    // customize
+    PositionedOn(): void;
+    CustomStartRenderHover(skillNode: SkillNode): void;
+    CustomStopRenderHover(skillNode: SkillNode): void;
+
     RenderActive(): void;
     RenderBase(): void;
     RenderCharacterStartsActive(): void;

@@ -12,6 +12,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/bun": "^1.1.14",
     "@types/downloadjs": "^1.4.5",
     "@types/klaw": "^3.0.5",
     "@types/semver": "^7.5.4",
